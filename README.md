@@ -1,6 +1,6 @@
 # High Concurrency Booking Engine
 
-## Entities
+## Entities Relationship Diagram
 <!----
 ```mermaid
 
