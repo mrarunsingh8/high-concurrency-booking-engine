@@ -4,7 +4,9 @@
     
 
 ```mermaid
-
+---
+title: ER Diagram
+---
 erDiagram
 
     USERS }o--o{ USER_OTPS : has
