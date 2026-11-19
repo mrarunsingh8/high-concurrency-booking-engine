@@ -1,31 +1,31 @@
 # High Concurrency Booking Engine
 
 ## Entities Relationship Diagram
-<!----
-```mermaid
-
-CUSTOMER ||--o{ ORDER : places
-    ORDER ||--|{ ORDER_ITEM : contains
-    PRODUCT ||--o{ ORDER_ITEM : includes
-Users ||--o{ user_otps : has
-
-```
--->
-
     
 
 ```mermaid
 
-
 erDiagram
 
-    USERS ||--o{ USER_OTPS : has
-    CITIES ||--o{ USERS : selected_by
+    USERS }o--o{ USER_OTPS : has
+    CITIES ||--|| USERS : selected_by
     CITIES ||--o{ THEATER: has
     THEATER ||--|{SCREENS: has
     MOVIES ||--|{SHOWS: play
     SCREENS ||--|{SHOWS: host
-    THEATER_SHEETS ||--o{SCREENS: exist
+    SCREENS ||--o{THEATER_SHEETS: provides
+    MOVIES }o--o{LANGUAGES: has
+    MOVIES }o--o{GENERE: includes
+    MOVIES }o--o{MOVIE_TYPES: has
+    MOVIES ||--o{PERSONS: CAST
+    MOVIES ||--o{PERSONS: CREW
+    BOOKINGS ||--o{BOOKINGSHEET: has
+    BOOKINGS ||--||MOVIES: has
+    BOOKINGS ||--|| CITIES: has
+    BOOKINGS ||--|| THEATER: has
+    BOOKINGSHEET ||--|| SHOWS: has
+    BOOKINGSHEET ||--|| SCREENS: has
+    BOOKINGSHEET ||--|| THEATER_SHEETS: has
 
     USERS {
         id `BIGINT AUTO_INCREMENT PRIMARY KEY`
@@ -106,16 +106,55 @@ erDiagram
     MOVIES {
         id `INT AUTO_INCREMENT PRIMARY KEY`
         name `VARCHAR(500) NOT NULL`
-        date `VARCHAR(500) NOT NULL`
-        string `VARCHAR(500) NOT NULL`
+        duration `VARCHAR(500) NOT NULL`
+        release_date DATETIME
+        description `VARCHAR(5000) NULL`
     }
 
-    
+    MOVIE_TYPES {
+        ID `INT AUTO_INCREMENT PRIMARY KEY`
+        name VARCHAR(200) NOT NULL
+    }
 
-
+    GENERE {
+        ID `INT AUTO_INCREMENT PRIMARY KEY`
+        name VARCHAR(200) NOT NULL
+    }
 
     LANGUAGES {
       ID `INT AUTO_INCREMENT PRIMARY KEY`
       name `VARCHAR(500) NOT NULL`
     }
+
+    PERSONS {
+        ID `INT AUTO_INCREMENT PRIMARY KEY`
+        name `VARCHAR(100) NOT NULL` 
+        act_as `VARCHAR(100) NOT NULL` 
+        image `VARCHAR(100) NOT NULL` 
+    }
+
+    BOOKINGS {
+        ID `BIGINT AUTO_INCREMENT PRIMARY KEY`
+        transactionId `varchar(250) DEFAULT NULL`
+        city_id `INT NOT NULL`
+        theater_id `INT NOT NULL`
+        movie_id `INT NOT NULL`
+        date `DATE NOT NULL`
+        time `DATE NOT NULL`
+        amount `FLOAT not null`
+        paymentStatus `ENUM('Process','Complete','Pending','Cancelled') DEFAULT 'Process'`
+        created_at `DATETIME NOT NULL`
+        updated_at `DATETIME NOT NULL`
+    }
+
+    BOOKINGSHEET {
+        ID `BIGINT AUTO_INCREMENT PRIMARY KEY`
+        booking_id `BIGINT(20) NOT NULL`
+        show_id `INT AUTO_INCREMENT NOT NULL`
+        screen_id `INT AUTO_INCREMENT NOT NULL`
+        row `varchar NOT NULL`
+        sheetNumber `varchar NOT NULL`
+    }
+
+
 ```
