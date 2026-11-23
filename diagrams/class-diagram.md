@@ -6,19 +6,28 @@ title: Book My Show Class Diagram
 ---
 classDiagram
 
-    Person "1" o-- "*" Movies : contains
-    Genere "1" o-- "*" Movies : contains
-    Language "1" o-- "*" Movies : contains
-    MovieType "1" o-- "*" Movies : contains
+    User "1" o-- "*" Booking : contains
+    Genere "1" o-- "*" Movie : contains
+    Language "1" o-- "*" Movie : contains
+    MovieType "1" o-- "*" Movie : contains
 
     City "1" *-- "*" Theater : has a
-    Theater "1" *-- "*" Movies : has a
-    Theater "1" *-- "*" Show : has a
     Theater "1" *-- "*" Screen : has a
     Screen "1" *-- "*" Seat : has a
-    Show --> Screen : Host in a 
+    Screen *-- Show : has a
+    Show "1" <-- "*" Movie : Plays
 
-    BookingManager "1" *-- "*" Booking : has a
+    Show "1" --> "*" Booking : has a
+
+    Booking *-- BookingSeat: has a
+    BookingSeat <-- Seat: refrence by
+    Booking "1" o-- "*" Payment : has a
+
+    Payment "1" o-- "*" PaymentManager : has a
+    PaymentManager --> PaymentStrategy: Pick by method
+    PaymentStrategy <-- CardPayment
+    PaymentStrategy <-- UPIPayment
+
 
     class Genere {
         - name String
@@ -27,7 +36,7 @@ classDiagram
         + setName(name String) Boolean
     }
 
-    class Person {
+    class User {
         - name String
         - role String
         - image String
@@ -56,14 +65,14 @@ classDiagram
         + setName(name Strign) String
     }
 
-    class Movies {
+    class Movie {
         - String name
         - duration String
         - release_date String
         - description String
 
-        - cast~List~ Persons
-        - crew~List~ Persons
+        - cast~List~ Users
+        - crew~List~ Users
         - generes~List~ Genere
         - languages~List~Language
         - movieTypes~List~MovieType
@@ -80,11 +89,11 @@ classDiagram
         + getDescription() String
         + setDescription(description String) Boolean
 
-        + getCast() Person
-        + setCast(cast Person) Boolean
+        + getCast() User
+        + setCast(cast User) Boolean
 
-        + getCrew() Person
-        + setCrew(crew Person) Boolean
+        + getCrew() User
+        + setCrew(crew User) Boolean
 
         + getGeneres()~List~ Genere
         + setGenere(genere Genere) Boolean
@@ -161,13 +170,66 @@ classDiagram
     class Booking {
         - datetime String
         - amount Number
-        - status~ENUM~ PENDING,CONFIRMED,CANCELLED,EXPIRED
-        - paymentStatus~ENUM~ PENDING,SUCCESS,FAILED,REFUNDED
+        - status BookingStatus
+        - paymentStatus PaymentStatus
     }
 
-    class BookingManager {
+    class BookingStatus {
+        <<enumeration>>
+        PENDING
+        CONFIRMED
+        CANCELLED
+        EXPIRED
+    }
+
+    class BookingSeat {
+        - row String
+        - num Number
+
+        + getRow() String
+        + setRow(row String) Boolean
+
+        + getNum() Number
+        + setNum(num String) Boolean
+    }
+
+    class Payment {
         booking Booking
-        
+        amount Number
+        paymentStatus PaymentStatus
+        paymentMethod PaymentMethod
+    }
+
+    class PaymentStrategy {
+        <<interface>>
+        +pay(paymentPayment) PaymentStatus
+    }
+
+    class CardPayment {
+        + pay(paymentPayment)
+    }
+
+    class UPIPayment {
+        pay(paymentPayment)
+    }
+
+    class PaymentManager {
+        -strategies Map~PaymentMethod, PaymentStrategy~
+        +pay(payment Payment) PaymentStatus
+    }
+
+    class PaymentMethod {
+        <<enumeration>>
+        CARD
+        UPI
+    }
+
+    class PaymentStatus {
+        <<enumeration>>
+        PENDING
+        SUCCESS
+        FAILED
+        REFUNDED
     }
 
 
